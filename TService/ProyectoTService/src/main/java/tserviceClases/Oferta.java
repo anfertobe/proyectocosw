@@ -1,10 +1,9 @@
 package tserviceClases;
-// Generated 17/02/2015 09:29:33 PM by Hibernate Tools 4.3.1
+// Generated 21/02/2015 11:39:05 AM by Hibernate Tools 4.3.1
 
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,11 +12,9 @@ import javax.persistence.GeneratedValue;
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -41,14 +38,14 @@ public class Oferta  implements java.io.Serializable {
      private double valor;
      private String descripcion;
      private String estado;
-     private List<Categoria> categorias = (List<Categoria>) new HashSet(0);
-     private List<Postulante> postulantes = (List<Postulante>) new HashSet(0);
+     private List<Categoria> categorias = new LinkedList();
+     private List<Postulante> postulantes =  new LinkedList();
 
     public Oferta() {
     }
 
 	
-        public Oferta(Postulante postulante, Publicante publicante, Date fechaCreacion, Date fechaFinalizacion, double valor, String descripcion, String estado) {
+    public Oferta(Postulante postulante, Publicante publicante, Date fechaCreacion, Date fechaFinalizacion, double valor, String descripcion, String estado) {
         this.postulante = postulante;
         this.publicante = publicante;
         this.fechaCreacion = fechaCreacion;
@@ -82,7 +79,7 @@ public class Oferta  implements java.io.Serializable {
         this.id = id;
     }
 
-@OneToOne(fetch=FetchType.LAZY)
+@ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="Calificacion_Id")
     public Calificacion getCalificacion() {
         return this.calificacion;
@@ -93,9 +90,7 @@ public class Oferta  implements java.io.Serializable {
     }
 
 @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumns( { 
-        @JoinColumn(name="Postulante_Persona_Identificacion", referencedColumnName="Persona_Identificacion", nullable=false), 
-        @JoinColumn(name="Postulante_Persona_Tipo Identificacion", referencedColumnName="Persona_Tipo Identificacion", nullable=false) } )
+    @JoinColumn(name="Trabajador_Identificacion", nullable=false)
     public Postulante getPostulante() {
         return this.postulante;
     }
@@ -105,9 +100,7 @@ public class Oferta  implements java.io.Serializable {
     }
 
 @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumns( { 
-        @JoinColumn(name="Publicante_Persona_Identificacion", referencedColumnName="Persona_Identificacion", nullable=false), 
-        @JoinColumn(name="Publicante_Persona_Tipo Identificacion", referencedColumnName="Persona_Tipo Identificacion", nullable=false) } )
+    @JoinColumn(name="Publicante_Identificacion", nullable=false)
     public Publicante getPublicante() {
         return this.publicante;
     }
@@ -146,12 +139,6 @@ public class Oferta  implements java.io.Serializable {
         this.valor = valor;
     }
 
-    public void addPostulante(Postulante oPostulante){
-        if (postulantes==null) postulantes=new ArrayList<Postulante>();
-    
-        postulantes.add(oPostulante);
-    }
-    
     
     @Column(name="Descripcion", nullable=false, length=45)
     public String getDescripcion() {
@@ -172,7 +159,10 @@ public class Oferta  implements java.io.Serializable {
         this.estado = estado;
     }
 
-@ManyToMany(fetch=FetchType.LAZY, mappedBy = "ofertas")
+@ManyToMany(fetch=FetchType.LAZY)
+    @JoinTable(name="Oferta_has_Categoria", catalog="coswg2", joinColumns = { 
+        @JoinColumn(name="Oferta_id", nullable=false, updatable=false) }, inverseJoinColumns = { 
+        @JoinColumn(name="Categoria_id", nullable=false, updatable=false) })
     public List<Categoria> getCategorias() {
         return this.categorias;
     }
@@ -183,9 +173,8 @@ public class Oferta  implements java.io.Serializable {
 
 @ManyToMany(fetch=FetchType.LAZY)
     @JoinTable(name="Oferta_has_Postulante", catalog="coswg2", joinColumns = { 
-        @JoinColumn(name="Oferta_id", nullable=false) }, inverseJoinColumns = { 
-        @JoinColumn(name="Postulante_Persona_Identificacion", nullable=false),
-        @JoinColumn(name="Postulante_Persona_Tipo Identificacion", referencedColumnName="Persona_Tipo Identificacion", nullable=false)})
+        @JoinColumn(name="Oferta_id", nullable=false, updatable=false) }, inverseJoinColumns = { 
+        @JoinColumn(name="Identificacion", nullable=false, updatable=false) })
     public List<Postulante> getPostulantes() {
         return this.postulantes;
     }

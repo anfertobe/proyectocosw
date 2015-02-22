@@ -1,5 +1,5 @@
 package tserviceClases;
-// Generated 17/02/2015 09:29:33 PM by Hibernate Tools 4.3.1
+// Generated 21/02/2015 11:39:05 AM by Hibernate Tools 4.3.1
 
 
 import javax.persistence.Column;
@@ -7,7 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -22,13 +21,15 @@ public class Correo  implements java.io.Serializable {
 
 
      private int id;
+     private Persona persona;
      private String correo;
 
     public Correo() {
     }
 
-    public Correo(int id, String correo) {
+    public Correo(int id, Persona persona, String correo) {
        this.id = id;
+       this.persona = persona;
        this.correo = correo;
     }
    
@@ -44,6 +45,17 @@ public class Correo  implements java.io.Serializable {
         this.id = id;
     }
 
+@ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="Identificacion", nullable=false)
+    public Persona getPersona() {
+        return this.persona;
+    }
+    
+    public void setPersona(Persona persona) {
+        this.persona = persona;
+    }
+
+    
     @Column(name="Correo", nullable=false, length=45)
     public String getCorreo() {
         return this.correo;
@@ -52,6 +64,10 @@ public class Correo  implements java.io.Serializable {
     public void setCorreo(String correo) {
         this.correo = correo;
     }
+
+
+
+
 }
 
 

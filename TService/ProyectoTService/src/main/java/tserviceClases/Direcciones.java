@@ -1,5 +1,5 @@
 package tserviceClases;
-// Generated 17/02/2015 09:29:33 PM by Hibernate Tools 4.3.1
+// Generated 21/02/2015 11:39:05 AM by Hibernate Tools 4.3.1
 
 
 import javax.persistence.Column;
@@ -9,7 +9,6 @@ import javax.persistence.GeneratedValue;
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -24,6 +23,7 @@ public class Direcciones  implements java.io.Serializable {
 
 
      private Integer id;
+     private Persona persona;
      private String direccion;
      private String telefono;
      private String pais;
@@ -33,7 +33,8 @@ public class Direcciones  implements java.io.Serializable {
     public Direcciones() {
     }
 
-    public Direcciones(String direccion, String telefono, String pais, String region, String ciudad) {
+    public Direcciones(Persona persona, String direccion, String telefono, String pais, String region, String ciudad) {
+       this.persona = persona;
        this.direccion = direccion;
        this.telefono = telefono;
        this.pais = pais;
@@ -52,6 +53,17 @@ public class Direcciones  implements java.io.Serializable {
     public void setId(Integer id) {
         this.id = id;
     }
+
+@ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="Identificacion", nullable=false)
+    public Persona getPersona() {
+        return this.persona;
+    }
+    
+    public void setPersona(Persona persona) {
+        this.persona = persona;
+    }
+
     
     @Column(name="Direccion", nullable=false, length=45)
     public String getDireccion() {
@@ -101,6 +113,10 @@ public class Direcciones  implements java.io.Serializable {
     public void setCiudad(String ciudad) {
         this.ciudad = ciudad;
     }
+
+
+
+
 }
 
 

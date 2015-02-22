@@ -1,9 +1,10 @@
 package tserviceClases;
-// Generated 17/02/2015 09:29:33 PM by Hibernate Tools 4.3.1
+// Generated 21/02/2015 11:39:05 AM by Hibernate Tools 4.3.1
 
 
-import java.util.HashSet;
-import java.util.Set;
+
+import java.util.LinkedList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -27,7 +28,8 @@ public class Calificacion  implements java.io.Serializable {
      private int rango;
      private String comentario;
      private int valor;
-     
+     private List<Oferta> ofertas = new LinkedList();
+
     public Calificacion() {
     }
 
@@ -36,6 +38,12 @@ public class Calificacion  implements java.io.Serializable {
         this.rango = rango;
         this.comentario = comentario;
         this.valor = valor;
+    }
+    public Calificacion(int rango, String comentario, int valor, List<Oferta> ofertas) {
+       this.rango = rango;
+       this.comentario = comentario;
+       this.valor = valor;
+       this.ofertas = ofertas;
     }
    
      @Id @GeneratedValue(strategy=IDENTITY)
@@ -79,6 +87,19 @@ public class Calificacion  implements java.io.Serializable {
     public void setValor(int valor) {
         this.valor = valor;
     }
+
+@OneToMany(fetch=FetchType.LAZY, mappedBy="calificacion")
+    public List<Oferta> getOfertas() {
+        return this.ofertas;
+    }
+    
+    public void setOfertas(List<Oferta> ofertas) {
+        this.ofertas = ofertas;
+    }
+
+
+
+
 }
 
 

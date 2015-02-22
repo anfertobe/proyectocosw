@@ -1,10 +1,10 @@
 package tserviceClases;
-// Generated 17/02/2015 09:29:33 PM by Hibernate Tools 4.3.1
+// Generated 21/02/2015 11:39:05 AM by Hibernate Tools 4.3.1
 
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+
+import java.util.LinkedList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -15,8 +15,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 /**
@@ -30,21 +28,22 @@ public class Categoria  implements java.io.Serializable {
 
 
      private Integer id;
+     private Interes interes;
      private String nombre;
-     private Set<Oferta> ofertas = new HashSet(0);
-     private Interes intereses;
+     private List<Oferta> ofertas = new LinkedList();
 
     public Categoria() {
     }
 
-	    
-    public Categoria(String nombre) {
+	
+    public Categoria(Interes interes, String nombre) {
+        this.interes = interes;
         this.nombre = nombre;
     }
-    public Categoria(String nombre, Set<Oferta> ofertas, Interes intereses) {
+    public Categoria(Interes interes, String nombre, List<Oferta> ofertas) {
+       this.interes = interes;
        this.nombre = nombre;
        this.ofertas = ofertas;
-       this.intereses = intereses;
     }
    
      @Id @GeneratedValue(strategy=IDENTITY)
@@ -57,6 +56,16 @@ public class Categoria  implements java.io.Serializable {
     
     public void setId(Integer id) {
         this.id = id;
+    }
+
+@ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="Interes_id", nullable=false)
+    public Interes getInteres() {
+        return this.interes;
+    }
+    
+    public void setInteres(Interes interes) {
+        this.interes = interes;
     }
 
     
@@ -73,21 +82,12 @@ public class Categoria  implements java.io.Serializable {
     @JoinTable(name="Oferta_has_Categoria", catalog="coswg2", joinColumns = { 
         @JoinColumn(name="Categoria_id", nullable=false, updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="Oferta_id", nullable=false, updatable=false) })
-    public Set<Oferta> getOfertas() {
+    public List<Oferta> getOfertas() {
         return this.ofertas;
     }
     
-    public void setOfertas(Set<Oferta> ofertas) {
+    public void setOfertas(List<Oferta> ofertas) {
         this.ofertas = ofertas;
-    }
-    
-@OneToOne(fetch=FetchType.LAZY)
-    public Interes getIntereses() {
-        return this.intereses;
-    }
-    
-    public void setIntereses(Interes intereses) {
-        this.intereses = intereses;
     }
 
 

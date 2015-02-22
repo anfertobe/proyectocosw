@@ -44,42 +44,36 @@ public class ServiceMainProgram {
         //1.  Consulta Registro de ofertante y de una oferta.
         
                 //Crear correos
-                ArrayList<Correo> lCorreos =new ArrayList<Correo>();
+                //ArrayList<Correo> lCorreos =new ArrayList<Correo>();
 
-                //Traer idCorreo
-                Query q = session.createQuery("select count(*) from Correo ");
-                List<Integer> tp = q.list();
-
-                Correo correo = new Correo(tp.get(0)+1,"prueba@gmail.com");
-                session.save(correo);
-
-
-                //Crear experiencia 
-                ArrayList<ExperienciaLaboral> lExperiencia =new ArrayList<ExperienciaLaboral>();
-
-                for (int i=0;i<2;i++){
-                    ExperienciaLaboral oExp = new ExperienciaLaboral("Prueba"+i ,new Date(20140101),"Prueba"+i);
-                    session.save(oExp);
-                    lExperiencia.add(oExp);
-                }
-
-
-                //Crear Direcciones
-                ArrayList<Direcciones> lDirecciones =new ArrayList<Direcciones>();
-
-                for (int i=0;i<2;i++){
-                    Direcciones oDir = new Direcciones("Prueba"+i,"Prueba"+i,"Prueba"+i,"Prueba"+i,"Prueba"+i);
-                    session.save(oDir);
-                    lDirecciones.add(oDir);
-                }
-
-                //Registrar ofertante
-                ServicePersistanceFacade.registroOfertante(session, 101, "CC", new Date(20140101),"Prueba Hoja de Vida", "20140101", "", "Prueba Oertante", lExperiencia, lCorreos, lDirecciones, "2","LicenciaPrueba",30);
         
+                //Registrar ofertante
+                ServicePersistanceFacade.registroOfertante(session, 101, "CC", new Date(20140101),"Prueba Hoja de Vida", "20140101", "", "Prueba Oertante", "2","LicenciaPrueba",30, "e3432k245j434");
+        
+                //Crear hoja de vida
+                HojaDeVida oHojaDeVida=new HojaDeVida("Prueba HojaDeVida","Fecha Prueba","FotoPrueba");
+
+                //Salvar hoja de vida
+                session.save(oHojaDeVida);
+                
                 int idOferta;
+                Interes i = new Interes();
+                
+                i.setExperiencia("ExperienciaPrueba");
+                Postulante post = new Postulante(12345666);
+                post.setIdentificacion(4858730);
+                post.setFechaNacimiento(new java.util.Date());
+                post.setNombre("nombre Prueba");
+                post.setHojaDeVida(oHojaDeVida);
+                session.save(post);
+                        
+                i.setPostulante(post);
+                
+                
+                session.save(i);
                 
                 //Crear categoria asociada
-                Categoria cat=ServicePersistanceFacade.registroCategoria(session,"Servicios Categoria");
+                Categoria cat=ServicePersistanceFacade.registroCategoria(session,"Servicios Categoria", i);
                 
                 ArrayList<Categoria> cats = new ArrayList<Categoria>();
                 
@@ -93,11 +87,12 @@ public class ServiceMainProgram {
         
                 //Crear intereses
                 ArrayList<Interes> interes=new ArrayList<Interes>();
-                for(int i=0;i<2;i++)interes.add(ServicePersistanceFacade.registroInteres(session,"Prueba"+i,cat));
+                Postulante p = null;
+                for(int j=0;j<2;j++)interes.add(ServicePersistanceFacade.registroInteres(session,"Prueba"+j,cat, p));
                 
                             
                 //Registrar postulante
-                Postulante oPostulante=ServicePersistanceFacade.registroPostulante(session, 205, "CC", new Date(20140101),"Prueba Hoja de Vida PO", "20140101", "", "Prueba Postulante", lExperiencia, lCorreos, lDirecciones, 100000,interes);
+                Postulante oPostulante=ServicePersistanceFacade.registroPostulante(session, 205, "CC", new Date(20140101),"Prueba Hoja de Vida PO", "20140101", "", "Prueba Postulante", 100000,interes);
         
         
                 //Asignar postulante a una oferta
@@ -113,7 +108,7 @@ public class ServiceMainProgram {
                 
         
                 
-        // 4. Ranking de postulantes por experiencia laboral en el área o por puntajes dados por empleadores anteriores.
+        
 
                 
                 

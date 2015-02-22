@@ -1,5 +1,5 @@
 package tserviceClases;
-// Generated 17/02/2015 09:29:33 PM by Hibernate Tools 4.3.1
+// Generated 21/02/2015 11:39:05 AM by Hibernate Tools 4.3.1
 
 
 import java.util.Date;
@@ -10,7 +10,6 @@ import javax.persistence.GeneratedValue;
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -28,6 +27,7 @@ public class Factura  implements java.io.Serializable {
 
      private Integer id;
      private Licencias licencias;
+     private Publicante publicante;
      private String referenciaPago;
      private int valor;
      private Date fecha;
@@ -35,8 +35,9 @@ public class Factura  implements java.io.Serializable {
     public Factura() {
     }
 
-    public Factura(Licencias licencias, Publicante publicante, String referenciaPago, int valor, Date fecha, String publicantePersonaTipoIdentificacion) {
+    public Factura(Licencias licencias, Publicante publicante, String referenciaPago, int valor, Date fecha) {
        this.licencias = licencias;
+       this.publicante = publicante;
        this.referenciaPago = referenciaPago;
        this.valor = valor;
        this.fecha = fecha;
@@ -62,8 +63,20 @@ public class Factura  implements java.io.Serializable {
     
     public void setLicencias(Licencias licencias) {
         this.licencias = licencias;
-    }    
-    @Column(name="Referencia Pago", nullable=false, length=45)
+    }
+
+@ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="Identificacion", nullable=false)
+    public Publicante getPublicante() {
+        return this.publicante;
+    }
+    
+    public void setPublicante(Publicante publicante) {
+        this.publicante = publicante;
+    }
+
+    
+    @Column(name="ReferenciaPago", nullable=false, length=45)
     public String getReferenciaPago() {
         return this.referenciaPago;
     }
@@ -91,6 +104,10 @@ public class Factura  implements java.io.Serializable {
     public void setFecha(Date fecha) {
         this.fecha = fecha;
     }
+
+
+
+
 }
 
 

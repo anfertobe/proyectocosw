@@ -10,9 +10,9 @@ package tserviceClases;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.List;
-import static jdk.nashorn.internal.runtime.regexp.joni.Syntax.Java;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -37,7 +37,7 @@ public class ServicePersistanceFacade {
         Publicante pOferta =null;
                
         for(Publicante pTemp:tp){
-            if ((pTemp.getId().getIdentificacion()==eIdentificacion) && (pTemp.getId().getTipoIdentificacion().trim().equals(sTipoId))){
+            if ((pTemp.getIdentificacion()==eIdentificacion) /*&& (pTemp.getTipoIdentificacion().trim().equals(sTipoId))*/){
                 pOferta=pTemp;
                 break;
             }
@@ -71,7 +71,7 @@ public class ServicePersistanceFacade {
         Postulante pOferta =null;
                
         for(Postulante pTemp:tp){
-            if ((pTemp.getId().getIdentificacion()==eIdentificacion) && (pTemp.getId().getTipoIdentificacion().trim().equals(sTipoId))){
+            if ((pTemp.getIdentificacion()==eIdentificacion) /*&& (pTemp.getIdentificacion() == sTipoId)*/){
                 pOferta=pTemp;
                 break;
             }
@@ -90,7 +90,7 @@ public class ServicePersistanceFacade {
         }
     
         if (oOferta!=null && pOferta!=null){        
-            oOferta.addPostulante(pOferta);
+            oOferta.setPostulante(pOferta);
             s.update(oOferta);
             return true;
         }else{
@@ -108,9 +108,11 @@ public class ServicePersistanceFacade {
     {
         Query q = s.createQuery("select count(*) from Licencias o");
         
-        List<Integer> tp = q.list();
+        List<Long> tp = q.list();
         
-        Licencias lic = new Licencias(tp.get(0)+1,sDescripcion,Dias);
+        int correctButComplicated = (int) tp.get(0).intValue();
+        
+        Licencias lic = new Licencias(correctButComplicated+1,sDescripcion,Dias,null);
         
         s.save(lic);
         
@@ -121,82 +123,71 @@ public class ServicePersistanceFacade {
        
     
     
-    /* @obj: crear un nuevo ofertante
+    /* @obj: crear un nuevo publicante
     * @pre: la persona no existe se agregara como ofertante
     * @param s: una sesión abierta de Hibernate, con una transacción ya iniciada.
     */
-    public boolean registroOfertante(Session s ,int eIdentificacion , String sTipoId ,Date fechaNacimiento ,String HojaDeVida , String fechaActualizacion , String foto , String nombre , List<ExperienciaLaboral> lExperiencia , List<Correo> lCorreos , List<Direcciones> lDirecciones , String ExperienciaOfertante,String sDescripcionLicencia , int DiasVigenciaLicencia ) 
+    public boolean registroOfertante(Session s ,int eIdentificacion , String sTipoId ,Date fechaNacimiento ,String HojaDeVida , String fechaActualizacion , String foto , String nombre  , String ExperienciaOfertante,String sDescripcionLicencia , int DiasVigenciaLicencia, String referenciaPago ) 
     {
-               
-        //Crear identificacion de persona 
-        PersonaId pId = new PersonaId(eIdentificacion,sTipoId);
-        
-        //Salvar identificacion
-        s.save(pId);
-        
-        //Actualizar
-        s.update(pId);
-        
-        
-        //Crear hoja de vida
+         
+           //Crear hoja de vida
         HojaDeVida oHojaDeVida=new HojaDeVida(HojaDeVida,fechaActualizacion,foto);
         
-        //Salvar identificacion
+        //Salvar hoja de vida
         s.save(oHojaDeVida);
         
-        //Actualizar
-        s.update(oHojaDeVida);
+        Publicante publi = new Publicante();
         
-        // 1. Crear como persona
-        Persona oPersona = new Persona(pId,oHojaDeVida,nombre,fechaNacimiento,lExperiencia ,lDirecciones ,lCorreos);
         
-        //Salvar identificacion
-        s.save(oPersona);
+        publi.setIdentificacion(eIdentificacion);
+        publi.setNombre(nombre);
+        publi.setFechaNacimiento(fechaNacimiento);
+        publi.setHojaDeVidaId(oHojaDeVida.getId());
+        publi.setExperiencia(ExperienciaOfertante);
+        publi.setFechaUltimaLicecia(new java.util.Date());
+        Persona personPubli = publi;
         
-        //Actualizar
-        s.update(oPersona);
-        
+        //Salvar publicante
+        s.save(personPubli);
+        s.save(publi);
         
         //Agregar licencia
         Licencias lic=registrarLicencia(s, sDescripcionLicencia, DiasVigenciaLicencia);
                
-                  
-        //2. Crear como ofertante
-        Publicante oPublicante = new Publicante(ExperienciaOfertante,new java.util.Date());
-        
-               
-        //Crear Factua debería ser un metodo ojo
+        //Crear Factura debería ser un metodo ojo
         
         int costo=DiasVigenciaLicencia*Licencias.costoDia;
         
-        Factura fac= new Factura(lic,oPublicante,String.valueOf(oPublicante.getId().hashCode()),costo,new java.util.Date(),pId.getTipoIdentificacion());
+        Factura fac= new Factura();
+          s.save(fac);       
+               
+        fac.setLicencias(lic);
+        fac.setPublicante(publi);
+        fac.setReferenciaPago(referenciaPago);
+        fac.setValor(costo);
+        fac.setFecha(new java.util.Date());       
+        s.update(fac);
+       
         
-        s.save(fac);
+        List<Factura> fcts;
         
-        ArrayList<Factura> fcts;
-        
-        if(oPublicante.getFacturas()==null){
-            fcts= new ArrayList<Factura>();
+        if(publi.getFacturas()==null){
+            fcts= new LinkedList();
         }else{
-            fcts=(ArrayList<Factura>) oPublicante.getFacturas() ;
+            fcts= publi.getFacturas() ;
         }
         
         fcts.add(fac);
         
         //Agregar facturas
-        oPublicante.setFacturas(fcts);
-        
-        
-        
-        //Agregar identificación
-        oPublicante.setId(pId);
-        
-               
-        //Salvar identificacion
-        s.save(oPublicante);
-        
+        publi.setFacturas(fcts);        
+              
         //Actualizar
-        s.update(oPublicante);
+        s.update(publi);
+        
+        
+         
+
         
         
         return true;
@@ -209,11 +200,11 @@ public class ServicePersistanceFacade {
     * @pre: el interes no existe 
     * @param s: una sesión abierta de Hibernate, con una transacción ya iniciada.
     */
-    public Interes registroInteres(Session s , String experiencia , Categoria cat) 
+    public Interes registroInteres(Session s , String experiencia , Categoria cat, Postulante p) 
     {
-        Interes interes = new Interes(experiencia);
+        Interes interes = new Interes(p, experiencia, (List<Categoria>) cat);
             
-        interes.setCategoria(cat);
+        interes.setCategorias((List<Categoria>) cat);
         
         s.save(interes);
         
@@ -245,8 +236,10 @@ public class ServicePersistanceFacade {
                 for(Categoria catOf:of.getCategorias()){
                 
                     //Comparar para su correspondencia
-                    if (catOf.getNombre().trim().equals(ints.getCategoria().getNombre().trim())){
+                    for(Categoria catO:ints.getCategorias()){
                     
+                    
+                    if (catOf.getNombre().trim().equals(catO.getNombre().trim())){
                         //Recorrer las facturas del postulante para encontrar la ultima
                         for(Factura fac:of.getPublicante().getFacturas()){
                             if (of.getPublicante().getFechaUltimaLicecia().equals(fac.getFecha())){
@@ -258,15 +251,12 @@ public class ServicePersistanceFacade {
                                                                 
                                 //Si no ha expirado la licencia traer oferta
                                 if(c.getTime().before(new java.util.Date())|| c.getTime().equals(new java.util.Date()) ){
-                                  ofs.add(of);
-                                 }
+                                    ofs.add(of);
+                                }
                             }
                         }
-                        
-                        
-                        
-                    }
-                    
+                    } 
+                    } 
                 }
             }
         }
@@ -280,9 +270,9 @@ public class ServicePersistanceFacade {
     * @pre: el interes no existe 
     * @param s: una sesión abierta de Hibernate, con una transacción ya iniciada.
     */
-    public Categoria registroCategoria(Session s , String nombreCategoria) 
+    public Categoria registroCategoria(Session s , String nombreCategoria, Interes i) 
     {
-        Categoria categoria = new Categoria(nombreCategoria);
+        Categoria categoria = new Categoria(i, nombreCategoria);
         
         s.save(categoria);
         
@@ -296,19 +286,10 @@ public class ServicePersistanceFacade {
     * @pre: la persona no existe se agregara como ofertante
     * @param s: una sesión abierta de Hibernate, con una transacción ya iniciada.
     */
-    public Postulante registroPostulante(Session s ,int eIdentificacion , String sTipoId ,Date fechaNacimiento ,String HojaDeVida , String fechaActualizacion , String foto , String nombre , List<ExperienciaLaboral> lExperiencia , List<Correo> lCorreos , List<Direcciones> lDirecciones , int aspiracionSalarial , List<Interes> lIntereses) 
+    public Postulante registroPostulante(Session s ,int eIdentificacion , String sTipoId ,Date fechaNacimiento ,String HojaDeVida , String fechaActualizacion , String foto , String nombre, int aspiracionSalarial , List<Interes> lIntereses) 
     {
-               
-        //Crear identificacion de persona 
-        PersonaId pId = new PersonaId(eIdentificacion,sTipoId);
-        
-        //Salvar identificacion
-        s.save(pId);
-        
-        //Actualizar
-        s.update(pId);
-        
-        
+           
+         
         //Crear hoja de vida
         HojaDeVida oHojaDeVida=new HojaDeVida(HojaDeVida,fechaActualizacion,foto);
         
@@ -318,8 +299,20 @@ public class ServicePersistanceFacade {
         //Actualizar
         s.update(oHojaDeVida);
         
+        //Crear identificacion de persona 
+        Persona pId = new Persona(eIdentificacion, nombre, fechaNacimiento,oHojaDeVida.getId());
+        
+        //Salvar identificacion
+        s.save(pId);
+        
+        //Actualizar
+        s.update(pId);
+        
+       
+        
         // 1. Crear como persona
-        Persona oPersona = new Persona(pId,oHojaDeVida,nombre,fechaNacimiento,lExperiencia ,lDirecciones ,lCorreos);
+        Publicante pu = null;
+        Persona oPersona = new Persona(eIdentificacion,oHojaDeVida,nombre,fechaNacimiento,oHojaDeVida.getId(),null, null ,null);
         
         //Salvar identificacion
         s.save(oPersona);
@@ -327,12 +320,12 @@ public class ServicePersistanceFacade {
         //Actualizar
         s.update(oPersona);
         
-        
+                
         //2. Crear como ofertante
         Postulante oPostulante = new Postulante(aspiracionSalarial);
         
         //Agregar identificación
-        oPostulante.setId(pId);
+        oPostulante.setIdentificacion(eIdentificacion);
         
         //Agregar intereses
         oPostulante.setIntereses(lIntereses);

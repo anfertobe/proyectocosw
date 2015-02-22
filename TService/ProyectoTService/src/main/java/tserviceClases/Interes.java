@@ -1,7 +1,10 @@
 package tserviceClases;
-// Generated 17/02/2015 09:29:33 PM by Hibernate Tools 4.3.1
+// Generated 21/02/2015 11:39:05 AM by Hibernate Tools 4.3.1
 
 
+
+import java.util.LinkedList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -9,8 +12,8 @@ import javax.persistence.GeneratedValue;
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
@@ -24,23 +27,22 @@ public class Interes  implements java.io.Serializable {
 
 
      private Integer id;
+     private Postulante postulante;
      private String experiencia;
-     //Mapear en BD
-     private Categoria categoria;
+     private List<Categoria> categorias =  new LinkedList();
 
     public Interes() {
     }
-    
-    public void setCategoria(Categoria categoria){
-        this.categoria=categoria;
-    }
-    
-    public Categoria getCategoria(){
-        return this.categoria;
-    }
 
-    public Interes(String experiencia) {
+	
+    public Interes(Postulante postulante, String experiencia) {
+        this.postulante = postulante;
+        this.experiencia = experiencia;
+    }
+    public Interes(Postulante postulante, String experiencia, List<Categoria> categorias) {
+       this.postulante = postulante;
        this.experiencia = experiencia;
+       this.categorias = categorias;
     }
    
      @Id @GeneratedValue(strategy=IDENTITY)
@@ -55,7 +57,18 @@ public class Interes  implements java.io.Serializable {
         this.id = id;
     }
 
-    @Column(name="ExperienciaA�os", nullable=false, length=45)
+@ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="Identificacion", nullable=false)
+    public Postulante getPostulante() {
+        return this.postulante;
+    }
+    
+    public void setPostulante(Postulante postulante) {
+        this.postulante = postulante;
+    }
+
+    
+    @Column(name="Experiencia", nullable=false, length=45)
     public String getExperiencia() {
         return this.experiencia;
     }
@@ -63,6 +76,19 @@ public class Interes  implements java.io.Serializable {
     public void setExperiencia(String experiencia) {
         this.experiencia = experiencia;
     }
+
+@OneToMany(fetch=FetchType.LAZY, mappedBy="interes")
+    public List<Categoria> getCategorias() {
+        return this.categorias;
+    }
+    
+    public void setCategorias(List<Categoria> categorias) {
+        this.categorias = categorias;
+    }
+
+
+
+
 }
 
 

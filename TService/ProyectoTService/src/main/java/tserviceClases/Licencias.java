@@ -1,9 +1,10 @@
 package tserviceClases;
-// Generated 17/02/2015 09:29:33 PM by Hibernate Tools 4.3.1
+// Generated 21/02/2015 11:39:05 AM by Hibernate Tools 4.3.1
 
 
-import java.util.HashSet;
-import java.util.Set;
+
+import java.util.LinkedList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -24,9 +25,8 @@ public class Licencias  implements java.io.Serializable {
      private int idLicencias;
      private String descripcion;
      private Integer vigenciaDias;
-     public static int costoDia=2000;
-     
-     
+     private List<Factura> facturas =  new LinkedList();
+    public static int costoDia=1000;
     public Licencias() {
     }
 
@@ -34,18 +34,16 @@ public class Licencias  implements java.io.Serializable {
     public Licencias(int idLicencias) {
         this.idLicencias = idLicencias;
     }
-    public Licencias(int idLicencias, String descripcion, Integer vigenciaDias) {
+    public Licencias(int idLicencias, String descripcion, Integer vigenciaDias, List<Factura> facturas) {
        this.idLicencias = idLicencias;
        this.descripcion = descripcion;
        this.vigenciaDias = vigenciaDias;
+       this.facturas = facturas;
     }
    
      @Id 
 
     
-     
-     
-     
     @Column(name="idLicencias", unique=true, nullable=false)
     public int getIdLicencias() {
         return this.idLicencias;
@@ -74,6 +72,19 @@ public class Licencias  implements java.io.Serializable {
     public void setVigenciaDias(Integer vigenciaDias) {
         this.vigenciaDias = vigenciaDias;
     }
+
+@OneToMany(fetch=FetchType.LAZY, mappedBy="licencias")
+    public List<Factura> getFacturas() {
+        return this.facturas;
+    }
+    
+    public void setFacturas(List<Factura> facturas) {
+        this.facturas = facturas;
+    }
+
+
+
+
 }
 
 
