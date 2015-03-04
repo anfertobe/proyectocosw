@@ -22,7 +22,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>4.3.1.Final</version>
+            <version>4.2.3.Final</version>
             <type>jar</type>
         </dependency>
         <dependency>
@@ -45,11 +45,6 @@
             <artifactId>h2</artifactId>
             <version>1.4.184</version>
         </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.5</version>
-       </dependency>
     </dependencies>
     <name>ProyectoTServiceeeee</name>
 </project>

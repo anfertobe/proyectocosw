@@ -5,6 +5,8 @@ package tserviceClases;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -27,13 +29,12 @@ public class Correo  implements java.io.Serializable {
     public Correo() {
     }
 
-    public Correo(int id, Persona persona, String correo) {
-       this.id = id;
+    public Correo(Persona persona, String correo) {
        this.persona = persona;
        this.correo = correo;
     }
    
-     @Id 
+     @Id @GeneratedValue(strategy=IDENTITY)
 
     
     @Column(name="Id", unique=true, nullable=false)

@@ -3,6 +3,7 @@ package tserviceClases;
 
 
 
+import java.sql.Date;
 import java.util.LinkedList;
 import java.util.List;
 import javax.persistence.Column;
@@ -26,14 +27,14 @@ public class HojaDeVida  implements java.io.Serializable {
 
      private Integer id;
      private String hojaDeVida;
-     private String fechaActualizacion;
+     private Date fechaActualizacion;
      private String foto;
 
     public HojaDeVida() {
     }
 
 	
-    public HojaDeVida(String hojaDeVida, String fechaActualizacion, String foto) {
+    public HojaDeVida(String hojaDeVida, Date fechaActualizacion, String foto) {
         this.hojaDeVida = hojaDeVida;
         this.fechaActualizacion = fechaActualizacion;
         this.foto = foto;
@@ -61,11 +62,11 @@ public class HojaDeVida  implements java.io.Serializable {
 
     
     @Column(name="FechaActualizacion", nullable=false, length=45)
-    public String getFechaActualizacion() {
+    public Date getFechaActualizacion() {
         return this.fechaActualizacion;
     }
     
-    public void setFechaActualizacion(String fechaActualizacion) {
+    public void setFechaActualizacion(Date fechaActualizacion) {
         this.fechaActualizacion = fechaActualizacion;
     }
 

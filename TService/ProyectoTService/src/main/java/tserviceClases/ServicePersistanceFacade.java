@@ -8,14 +8,13 @@ package tserviceClases;
 
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 
 /**
@@ -131,7 +130,7 @@ public class ServicePersistanceFacade {
     {
          
            //Crear hoja de vida
-        HojaDeVida oHojaDeVida=new HojaDeVida(HojaDeVida,fechaActualizacion,foto);
+        HojaDeVida oHojaDeVida=new HojaDeVida(HojaDeVida,new Date(28,02,2015),foto);
         
         //Salvar hoja de vida
         s.save(oHojaDeVida);
@@ -144,7 +143,7 @@ public class ServicePersistanceFacade {
         publi.setFechaNacimiento(fechaNacimiento);
         publi.setHojaDeVidaId(oHojaDeVida.getId());
         publi.setExperiencia(ExperienciaOfertante);
-        publi.setFechaUltimaLicecia(new java.util.Date());
+        publi.setFechaUltimaLicecia(new Date(1,1,1));
         Persona personPubli = publi;
         
         //Salvar publicante
@@ -291,7 +290,7 @@ public class ServicePersistanceFacade {
            
          
         //Crear hoja de vida
-        HojaDeVida oHojaDeVida=new HojaDeVida(HojaDeVida,fechaActualizacion,foto);
+        HojaDeVida oHojaDeVida=new HojaDeVida(HojaDeVida,Date.valueOf(LocalDate.MIN),foto);
         
         //Salvar identificacion
         s.save(oHojaDeVida);
@@ -350,7 +349,57 @@ public class ServicePersistanceFacade {
         
         //s.save(pa);        
     }
-
+    
+    public void adicionarPublicante(Session s)
+    {
+        
+        Query q = s.createQuery("from Persona p where p.identificacion = :id");
+        q.setInteger("id", 1074417758);
+        
+        Persona p = (Persona) q.uniqueResult();
+        s.evict(p);
+        
+        Publicante pub = new Publicante("Esperiencia prueba", new Date(1,1,1), p);
+        
+        
+        s.save(pub);
+        
+        
+    }
+    
+    public void adicionarOfertante()
+    {
+        //Postulante post = 
+    }
+    public void adicionarPersona(Session s)
+    {
+        HojaDeVida hdv = new HojaDeVida("HojaDeVidaPrueba", new Date(28,02,2015), "FotoPrueba");
+        s.save(hdv);
+        
+        Persona per = new Persona(1074417757, "Andres Fernando Torres Beltran", new Date(06, 07, 1994), hdv.getId());
+        s.save(per);
+        
+        Direcciones direccin = new Direcciones(per, "Direccion Prueba", "313819626", "Colombia", "Cundinamarca", "Sopo");
+        s.save(direccin);
+        
+        List<Direcciones> direc = new LinkedList();
+        
+        direc.add(direccin);
+        
+        per.setDireccioneses(direc);
+        
+        Correo cor = new Correo(per, "anfertobe@gmail.com");
+        
+        s.save(cor);
+        
+        List<Correo> correos = new LinkedList();
+        
+        correos.add(cor);
+        
+        per.setCorreos(correos);
+        
+        s.update(per);
+    }
     
     
 }
